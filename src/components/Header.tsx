@@ -15,7 +15,7 @@ export function Header() {
             </div>
             <div>
               <h1 className="text-xl font-bold">Metoushela AI</h1>
-              <p className="text-xs text-purple-300">Created by Metoushela Walker</p>
+              <p className="text-xs text-pink-200">Created by Metoushela Walker</p>
             </div>
           </div>
           
@@ -40,7 +40,7 @@ export function Header() {
 
       {/* Sliding Menu */}
       <div 
-        className={`fixed top-0 right-0 h-full w-72 bg-white/95 backdrop-blur-xl transform transition-transform duration-300 ease-in-out shadow-2xl ${
+        className={`fixed top-0 right-0 h-full w-72 bg-white transform transition-transform duration-300 ease-in-out shadow-2xl ${
           isMenuOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
       >
@@ -57,7 +57,7 @@ export function Header() {
           <div className="space-y-4">
             <h2 className="text-lg font-semibold text-purple-800">Menu</h2>
             
-            <div className="space-y-2">
+            <div className="space-y-2 bg-gray-100 p-6 rounded-lg">
               <button className="w-full flex items-center space-x-3 px-4 py-2 text-left text-purple-700 hover:bg-purple-50 rounded-lg transition-colors">
                 <Settings className="w-5 h-5" />
                 <span>Settings</span>
@@ -74,7 +74,7 @@ export function Header() {
 
             <div className="pt-6">
               <h2 className="text-lg font-semibold text-purple-800 mb-4">Connect</h2>
-              <div className="flex justify-around">
+              <div className="flex justify-around bg-gray-100 p-6 rounded-lg">
                 <a href="https://github.com/MeganAe" className="p-2 text-purple-600 hover:bg-purple-100 rounded-full transition-colors">
                   <Github className="w-6 h-6" />
                 </a>
