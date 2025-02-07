@@ -82,14 +82,9 @@ function App() {
 
   // Fonction de copie du texte ou du code
   const copyToClipboard = (text: string) => {
-    // Créer un élément textarea temporaire pour copier le texte
-    const tempTextArea = document.createElement('textarea');
-    tempTextArea.value = text;
-    document.body.appendChild(tempTextArea);
-    tempTextArea.select();
-    document.execCommand('copy');
-    document.body.removeChild(tempTextArea);
-    alert('Copied to clipboard!');
+    navigator.clipboard.writeText(text).then(() => {
+      alert('Copied to clipboard!');
+    });
   };
 
   return (
@@ -99,24 +94,25 @@ function App() {
         <div className="container mx-auto px-4 max-w-4xl">
           <div className="space-y-6">
             {chatState.messages.map((message) => (
-              <div key={message.id} className="flex justify-between items-center space-x-2">
-                {/* Différenciation entre texte normal et code */}
-                {message.type === 'code' ? (
-                  <pre className="bg-gray-800 text-white p-4 rounded-md overflow-x-auto">
-                    {message.content}
-                  </pre>
-                ) : (
-                  <p className="text-gray-800">{message.content}</p>
-                )}
+              <ChatMessage key={message.id} message={message}>
+                {/* Affichage du message avec le bouton "Copier" */}
+                <div className="flex justify-between items-center">
+                  {message.type === 'code' ? (
+                    <pre className="bg-gray-800 text-white p-4 rounded-md overflow-x-auto">
+                      {message.content}
+                    </pre>
+                  ) : (
+                    <p className="text-gray-800">{message.content}</p>
+                  )}
 
-                {/* Bouton "Copier" */}
-                <button 
-                  onClick={() => copyToClipboard(message.content)} 
-                  className="ml-2 text-blue-500 hover:underline"
-                >
-                  Copy
-                </button>
-              </div>
+                  <button 
+                    onClick={() => copyToClipboard(message.content)} 
+                    className="ml-2 text-blue-500 hover:underline"
+                  >
+                    Copy
+                  </button>
+                </div>
+              </ChatMessage>
             ))}
             {chatState.isLoading && (
               <div className="flex justify-center">
@@ -137,3 +133,4 @@ function App() {
 }
 
 export default App;
+  
