@@ -41,7 +41,7 @@ function App() {
     try {
       if (type === 'image') {
         const query = content.replace('/poli ', '');
-        const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(query)}`;
+        const imageUrl = `https://metoushela-image-gen-api.vercel.app/image/prompt=${encodeURIComponent(query)}`;
         
         const botResponse: Message = {
           id: (Date.now() + 1).toString(),
