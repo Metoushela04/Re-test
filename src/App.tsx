@@ -5,8 +5,7 @@ import { ChatMessage } from './components/ChatMessage';
 import { ChatInput } from './components/ChatInput';
 import type { Message, ChatState } from './types';
 
-const API_KEY = "AIzaSyDSrtttEykprVBleLk9iWXMZZeJCt3bBRk";
-const API_URL = `https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=${API_KEY}`;
+const TEXT_API_URL = "https://text.pollinations.ai/openai/"; // API pour générer du texte
 
 function App() {
   const [chatState, setChatState] = useState<ChatState>({
@@ -41,16 +40,17 @@ function App() {
 
     try {
       if (type === 'image') {
-        const query = content.replace('/poli ', ''); // Vous pouvez ajuster la manière dont vous souhaitez traiter la requête
+        const query = content.replace('/poli ', ''); // Traite la requête pour l'API d'image
         const imageUrl = `https://metoushela-image-gen-api.vercel.app/image?prompt=${encodeURIComponent(query)}`;
         
+        // Attendez la réponse de l'API de génération d'image
         const botResponse: Message = {
           id: (Date.now() + 1).toString(),
           content: 'Here\'s your generated image:',
           sender: 'bot',
           timestamp: new Date(),
           type: 'image',
-          imageUrl,
+          imageUrl, // URL de l'image générée
         };
 
         setChatState(prev => ({
@@ -59,13 +59,16 @@ function App() {
           isLoading: false,
         }));
       } else {
-        const response = await axios.post(API_URL, {
-          contents: [{ parts: [{ text: content }] }]
+        // Requête pour générer une réponse textuelle avec l'API de Pollinations AI
+        const response = await axios.post(TEXT_API_URL, {
+          prompt: content,
+          max_tokens: 150,
+          temperature: 0.7,
         });
 
         const botResponse: Message = {
           id: (Date.now() + 1).toString(),
-          content: response.data.candidates[0].content.parts[0].text,
+          content: response.data.text.trim(), // Réponse générée par l'API de Pollinations AI
           sender: 'bot',
           timestamp: new Date(),
           type: 'text',
@@ -111,4 +114,4 @@ function App() {
 }
 
 export default App;
-                             
+                     
