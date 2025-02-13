@@ -5,7 +5,8 @@ import { ChatMessage } from './components/ChatMessage';
 import { ChatInput } from './components/ChatInput';
 import type { Message, ChatState } from './types';
 
-const API_URL = "https://text.pollinations.ai/openai/";
+const API_KEY = "AIzaSyDSrtttEykprVBleLk9iWXMZZeJCt3bBRk";
+const API_URL = `https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=${API_KEY}`;
 
 function App() {
   const [chatState, setChatState] = useState<ChatState>({
@@ -23,7 +24,7 @@ function App() {
     scrollToBottom();
   }, [chatState.messages]);
 
-  const handleSendMessage = async (content: string, type: 'text' | 'image' | 'code') => {
+  const handleSendMessage = async (content: string, type: 'text' | 'image') => {
     const newMessage: Message = {
       id: Date.now().toString(),
       content,
@@ -40,8 +41,8 @@ function App() {
 
     try {
       if (type === 'image') {
-        const query = content.replace('/poli ', '');
-        const imageUrl = `https://metoushela-image-gen-api.vercel.app/image/prompt=${encodeURIComponent(query)}`;
+        const query = content.replace('/poli ', ''); // Vous pouvez ajuster la manière dont vous souhaitez traiter la requête
+        const imageUrl = `https://metoushela-image-gen-api.vercel.app/image?prompt=${encodeURIComponent(query)}`;
         
         const botResponse: Message = {
           id: (Date.now() + 1).toString(),
@@ -58,11 +59,13 @@ function App() {
           isLoading: false,
         }));
       } else {
-        const response = await axios.get(`${API_URL}${encodeURIComponent(content)}`);
+        const response = await axios.post(API_URL, {
+          contents: [{ parts: [{ text: content }] }]
+        });
 
         const botResponse: Message = {
           id: (Date.now() + 1).toString(),
-          content: response.data, // Pollinations API renvoie directement du texte
+          content: response.data.candidates[0].content.parts[0].text,
           sender: 'bot',
           timestamp: new Date(),
           type: 'text',
@@ -80,13 +83,6 @@ function App() {
     }
   };
 
-  // Fonction de copie du texte ou du code
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text).then(() => {
-      alert('Copied to clipboard!');
-    });
-  };
-
   return (
     <div className="min-h-screen bg-gray-100">
       <Header />
@@ -94,25 +90,7 @@ function App() {
         <div className="container mx-auto px-4 max-w-4xl">
           <div className="space-y-6">
             {chatState.messages.map((message) => (
-              <ChatMessage key={message.id} message={message}>
-                {/* Affichage du message avec le bouton "Copier" */}
-                <div className="flex justify-between items-center">
-                  {message.type === 'code' ? (
-                    <pre className="bg-gray-800 text-white p-4 rounded-md overflow-x-auto">
-                      {message.content}
-                    </pre>
-                  ) : (
-                    <p className="text-gray-800">{message.content}</p>
-                  )}
-
-                  <button 
-                    onClick={() => copyToClipboard(message.content)} 
-                    className="ml-2 text-blue-500 hover:underline"
-                  >
-                    Copy
-                  </button>
-                </div>
-              </ChatMessage>
+              <ChatMessage key={message.id} message={message} />
             ))}
             {chatState.isLoading && (
               <div className="flex justify-center">
@@ -133,4 +111,4 @@ function App() {
 }
 
 export default App;
-  
+                             
