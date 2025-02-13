@@ -3,9 +3,12 @@ import axios from 'axios';
 import { Header } from './components/Header';
 import { ChatMessage } from './components/ChatMessage';
 import { ChatInput } from './components/ChatInput';
+import { fal } from '@fal-ai/client'; // Importation de la bibliothèque Fal AI
 import type { Message, ChatState } from './types';
 
 const TEXT_API_URL = "https://text.pollinations.ai/openai/"; // API pour générer du texte
+
+fal.config({ credentials: "5bc94134-46b7-40f6-b4b0-3be3e131117a:585abd893ed441ae5a30ca208f84816c" }); // Configure Fal avec votre clé API
 
 function App() {
   const [chatState, setChatState] = useState<ChatState>({
@@ -41,16 +44,20 @@ function App() {
     try {
       if (type === 'image') {
         const query = content.replace('/poli ', ''); // Traite la requête pour l'API d'image
-        const imageUrl = `https://metoushela-image-gen-api.vercel.app/image?prompt=${encodeURIComponent(query)}`;
         
-        // Attendez la réponse de l'API de génération d'image
+        // Appel à l'API Fal AI pour générer une image
+        const result = await fal.subscribe("fal-ai/fast-sdxl", {
+          input: { prompt: query },
+          logs: true,
+        });
+
         const botResponse: Message = {
           id: (Date.now() + 1).toString(),
           content: 'Here\'s your generated image:',
           sender: 'bot',
           timestamp: new Date(),
           type: 'image',
-          imageUrl, // URL de l'image générée
+          imageUrl: result.data, // URL de l'image générée
         };
 
         setChatState(prev => ({
@@ -114,4 +121,4 @@ function App() {
 }
 
 export default App;
-                     
+                  
